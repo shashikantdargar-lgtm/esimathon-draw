@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>eSIM-A-THON · Team Name Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef3fb; --panel:#ffffff; --ink:#0d1b3a; --muted:#51607d; --line:#c9d5ea;
+  --cyan:#0a8fb8; --amber:#b86f00; --chip:#e3ecfa; --taken:#e7ebf2;
+  --danger:#b3261e; --ok:#1c7c4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#070f24; --panel:#0e1b3b; --ink:#eaf2ff; --muted:#9fb1d4; --line:#1f3263;
+    --cyan:#36d6ff; --amber:#ffb627; --chip:#15275a; --taken:#0b1530; --danger:#ff7a70; --ok:#5fe0a0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070f24; --panel:#0e1b3b; --ink:#eaf2ff; --muted:#9fb1d4; --line:#1f3263;
+  --cyan:#36d6ff; --amber:#ffb627; --chip:#15275a; --taken:#0b1530; --danger:#ff7a70; --ok:#5fe0a0;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+h1{font-family:"Chakra Petch","Trebuchet MS",sans-serif;font-weight:700;font-size:clamp(34px,6vw,56px);line-height:1;margin:0}
+h1 .a{color:var(--cyan)} h1 .b{color:var(--amber)}
+.sub{margin:8px 0 0;color:var(--muted);font-size:17px}
+.meters{display:flex;gap:26px;text-align:right}
+.meter .num{font-family:"Chakra Petch",sans-serif;font-size:40px;font-weight:700;line-height:1;color:var(--amber)}
+.meter .lbl{color:var(--muted);font-size:14px}
+h2{font-family:"Chakra Petch",sans-serif;font-size:22px;margin:30px 0 12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 small{font-family:"Barlow",sans-serif;font-weight:500;font-size:15px;color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%}
+input,select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--line);border-radius:10px;z-index:5;max-height:340px;overflow:auto;display:none}
+.results.on{display:block}
+.res{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 12px;border:none;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer}
+.res:last-child{border-bottom:none}
+.res:hover,.res:focus-visible{background:var(--chip);outline:none}
+.res[disabled]{cursor:not-allowed;opacity:.55}
+.res .meta{color:var(--muted);font-size:13px;text-align:right;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;min-height:40px;align-items:center}
+.chip{display:flex;align-items:center;gap:8px;background:var(--chip);border-radius:999px;padding:6px 8px 6px 14px;font-weight:600}
+.chip small{font-weight:400;color:var(--muted)}
+.chip button{border:none;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:0 4px}
+.hint{color:var(--muted);font-size:14px}
+button{font:inherit;cursor:pointer}
+.btn{padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:600}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#04121f}
+.btn.warn{color:var(--danger);border-color:var(--danger);background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible,.card:focus-visible,input:focus-visible,select:focus-visible,.chip button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px}
+.grid.locked .card{opacity:.45}
+.card{display:grid;place-items:center;aspect-ratio:1;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:clamp(22px,3.6vw,32px);transition:border-color .15s,transform .15s,color .15s}
+.grid:not(.locked) .card:hover{border-color:var(--amber);color:var(--amber);transform:translateY(-2px)}
+.card.leaving{animation:out .45s forwards}
+@keyframes out{to{opacity:0;transform:scale(.8)}}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.tm{display:flex;gap:12px;padding:12px 14px;border-radius:12px;background:var(--taken);border:1px solid var(--line)}
+.tm .n{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:22px;color:var(--cyan);min-width:34px}
+.tm .nm{font-weight:700;font-size:17px}
+.tm .mem{color:var(--muted);font-size:14px}
+.tm .rel{margin-left:auto;align-self:flex-start;border:none;background:none;color:var(--danger);font-size:13px;text-decoration:underline;padding:2px}
+.empty{color:var(--muted);padding:10px 0}
+.foot{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;align-items:center}
+.note{color:var(--muted);font-size:14px;flex:1;min-width:220px}
+.overlay{position:fixed;inset:0;background:rgba(3,8,22,.62);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.modal{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:26px;width:min(460px,100%)}
+.modal .big{font-family:"Chakra Petch",sans-serif;font-size:54px;font-weight:700;line-height:1;margin:4px 0 12px;color:var(--cyan)}
+.reveal{font-family:"Chakra Petch",sans-serif;font-size:clamp(30px,7vw,46px);font-weight:700;line-height:1.1;color:var(--amber);margin:10px 0 8px;animation:pop .6s ease-out}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+.err{color:var(--danger);font-size:13px;min-height:18px;margin-top:6px}
+.row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:90%}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion: reduce){.card,.card.leaving,.reveal{animation:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span class="a">eSIM</span>-A-<span class="b">THON</span></h1>
+      <p class="sub">Add your team members, pick a number, and reveal your team name.</p>
+    </div>
+    <div class="meters">
+      <div class="meter"><div class="num" id="left">60</div><div class="lbl">numbers left</div></div>
+      <div class="meter"><div class="num" id="free">150</div><div class="lbl">participants without a team</div></div>
+    </div>
+  </header>
+
+  <h2>1. Add team members <small id="sizeHint"></small></h2>
+  <div class="panel">
+    <div class="tools">
+      <div class="search">
+        <input id="q" type="search" autocomplete="off" placeholder="Search by name, register number or pass code" aria-label="Search participants">
+        <div class="results" id="results" role="listbox"></div>
+      </div>
+      <select id="slot" aria-label="Slot"><option value="">All slots</option><option value="1">Slot 1</option><option value="2">Slot 2</option></select>
+      <select id="max" aria-label="Maximum team size"><option value="1">Max 1 per team</option><option value="2">Max 2 per team</option><option value="3" selected>Max 3 per team</option><option value="4">Max 4 per team</option></select>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <h2>2. Pick a number <small id="pickHint">Add at least one member first.</small></h2>
+  <div class="grid locked" id="grid"></div>
+  <div class="empty" id="noneLeft" hidden>Every number has been picked.</div>
+
+  <h2>Revealed teams <small id="teamCount"></small></h2>
+  <div class="teams" id="teams"></div>
+  <div class="empty" id="noneTeams">No teams yet.</div>
+
+  <div class="foot">
+    <p class="note" id="mode"></p>
+    <button class="btn" id="csv">Download teams (CSV)</button>
+    <button class="btn warn" id="reset" hidden>Reset all</button>
+  </div>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true" aria-labelledby="mT">
+  <div class="modal">
+    <div class="hint" id="mT">You picked number</div>
+    <div class="big" id="mNum"></div>
+    <div class="hint">For</div>
+    <div id="mMembers" style="font-weight:600;margin-top:2px"></div>
+    <div class="err" id="err"></div>
+    <div class="row">
+      <button class="btn" id="cancel">Cancel</button>
+      <button class="btn primary" id="confirm">Reveal team name</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="rv" role="dialog" aria-modal="true" aria-labelledby="rvT">
+  <div class="modal" style="text-align:center">
+    <div class="hint" id="rvT" style="font-size:15px"></div>
+    <div class="reveal" id="rvName"></div>
+    <div class="hint" id="rvBy" style="font-size:15px"></div>
+    <div class="row" style="justify-content:center;margin-top:20px"><button class="btn primary" id="rvOk">Next team</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const NAMES=["Ohm Sweet Ohm", "Hall Effect", "Barkhausen Brigade", "Short Circuit", "H-Bridge Heroes", "Class-AB Aces", "Universal Gates", "Feedback Loop", "Miller Effect", "Transistor Titans", "Boolean Bosses", "Crystal Clear", "Nyquist Ninjas", "Zener Zone", "The Clampers", "Flip-Flop Force", "Thevenin's Tribe", "555 Timers", "Phase Shifters", "Voltage Followers", "Mux Masters", "Diff Amp Dynamos", "Superposition Squad", "Negative Feedback", "Push-Pull Squad", "Bridge Rectifiers", "Hartley Heroes", "Wheatstone Wizards", "The Clippers", "Voltage Doublers", "Max Power Transfer", "Full Adders", "Phase-Locked Loop", "Sample & Hold", "PWM Pros", "Silicon Squad", "Schmitt Triggers", "Common Emitters", "Kirchhoff's Crew", "Karnaugh Mappers", "MOSFET Masters", "LC Resonators", "Logic Legends", "Johnson Juniors", "Darlington Duo", "Ring Counters", "Band-Pass Blazers", "Diode Dynamos", "Buck Boosters", "Cascode Kings", "Colpitts Crew", "Wien Bridge Warriors", "Astable Minds", "Tank Circuit Titans", "Norton Knights", "Fourier Force", "The Op-Amps", "Moore's Law", "JK Masters", "Shift Registers"];
+const PEOPLE=[{"c":"EUPH-26-9E9E1C","n":"BOJANAPU SREESANTH KUMAR 2025-CSE","r":"99250040092","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-E002B6","n":"THIPPALOORI MAHENDRA REDDY 2025-CSE","r":"99250040798","d":"CSE","k":"KARE","s":"1","y":"1"},{"c":"EUPH-26-3600CE","n":"THUMMALA THARUN KUMAR 2025-CSE","r":"99250040764","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-EBD1DC","n":"TELLAZEERA BADRINATH","r":"99250040789","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-061417","n":"BOGADI HEMA SUNDAR 2025-ECE","r":"9925005032","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-3E9AEC","n":"PELLURI ARUN KUMAR","r":"9924005338","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-32734D","n":"EEDE SHANMUKA 2024-ECE","r":"9924005050","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-ED9613","n":"RAVELA VIJAYA BABU 2024-ECE","r":"9924005349","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-890835","n":"NAVEEN KUMAR S A 2025-ECE","r":"9925005185","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-A6FD5A","n":"JAYACHANDRA N","r":"9925005182","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-ED2F0F","n":"JAYASOORYA N 2025-ECE","r":"9925005183","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-5473D9","n":"OBULAREDDY NAGA VENKATA SANTOSH REDDY 2025-CSE","r":"99250040521","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-E0A289","n":"PAIDIPAMULA TULASIRAM 2024-ECE","r":"9924005325","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-CA8251","n":"KANAGA LAKSHMI.V","r":"9924011033","d":"Food Tech","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-847427","n":"ADLIN NEHA R C 2024-ECE","r":"9924005010","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-EBCF72","n":"AYODHYAPURAM AKASH KUMAR REDDY 2023-ECE","r":"9923005166","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-25287B","n":"Jyashna K","r":"JYASHNA K","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-1BF2CE","n":"ABISHEK RAJ S","r":"9924005004","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-488C90","n":"AMBATI GOVARDHAN KUMAR 2025-ECE","r":"9925005016","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-4AF7C0","n":"PATHAN AMANULLA KHAN 2025-ECE","r":"9925005078","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-3EEB82","n":"SHAIK MAHABOOB BASHA 2025-ECE","r":"9925005164","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-978020","n":"KARI BHARGAV MANIKANTA 2024-ECE","r":"9924005445","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-CCBA5E","n":"MERUGUMALA AMRUTHA 2025-ECE","r":"9925005097","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-1F2DC7","n":"MERUGUMALA AKSHAY 2025-ECE","r":"9925005096","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-BE4AE5","n":"PATAN SIDDIK","r":"9924005158","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-01CC58","n":"GUNDLURU NOOR AHMAD KHAN 2024-ECE","r":"9924005135","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-EFE695","n":"VADDLA TEJESH ACHARI 2025-ECE","r":"9925005107","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-E03F3E","n":"MERUGU NANDAKISHOR 2025-ECE","r":"9925005095","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-102848","n":"KOMMI YAGNESHWAR 2024-ECE","r":"9924005165","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-650F65","n":"KOLA MANOJ KUMAR 2024-ECE","r":"9924005151","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-C1349B","n":"YALAVARTHI NIKHIL 2024-ECE","r":"9924005404","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-50734C","n":"VYJYAPU NARESH KUMAR REDDY 2024-CSE","r":"99240041232","d":"CSE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-0CB415","n":"M Bhuvaneshwari","r":"9924005212","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-A23B32","n":"Ambai Devi M","r":"9924005374","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-6990A6","n":"Karthika G","r":"KARTHIGOPI2404","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-0936A7","n":"VIDYASRI K S 2024-ECE","r":"9924005364","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-E68540","n":"ITHA ARYAN AYYAPPA 2024-ECE","r":"9924005424","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-5B0015","n":"MAMIDALA MANIDEEP 2024-ECE","r":"9924005401","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-D89E7E","n":"SHAIK SAMEER BASHA 2024-ECE","r":"9924005386","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-1B6157","n":"KOTA SAI PRASAD 2024-ECE","r":"9924005455","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-A58113","n":"ASHISH ASHWIN S","r":"9925005186","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-35965B","n":"DEVADHARSHAN S","r":"9925005190","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-E8DD7B","n":"SHYAM SUNDAR G","r":"9925005152","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-603ACB","n":"SUNDAR S 2025-ECE","r":"9925005151","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-406BC6","n":"Abish Varsan M","r":"","d":"VLSI","k":"Dr. Mahalingam CET","s":"1","y":"2"},{"c":"EUPH-26-19D615","n":"Rajasekaran C","r":"","d":"Engg & Tech","k":"Dr. Mahalingam CET","s":"1","y":"2"},{"c":"EUPH-26-88A9A7","n":"ANFAS S","r":"","d":"VLSI","k":"Dr. Mahalingam CET","s":"1","y":"2"},{"c":"EUPH-26-E73704","n":"Subasree S","r":"","d":"ECE","k":"M. Kumarasamy CE","s":"1","y":"2"},{"c":"EUPH-26-7E47E1","n":"RAKSHANAA V U 2025-ECE","r":"9925005027","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-F7898E","n":"MUTHU ABIRAMI A 2025-ECE","r":"9925005214","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-6BFD4B","n":"PRASANNA RAJ T","r":"TPRRAJ2K8","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-A448EF","n":"PASUPULETI PALLAVI","r":"9925005119","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-ADF134","n":"GANTLA NAVEEN REDDY 2023-ECE","r":"9923005081","d":"CSE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-046994","n":"VEMULA ROHITH DATTU 2023-ECE","r":"9923005047","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-B4AC72","n":"THIMMAREDDY RAJAGOPAL REDDY 2025-CSE","r":"99250040791","d":"CSE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-C97CA1","n":"SOMA VISHNU THEJESWARA REDDY 2023-ECE","r":"9923005129","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-96E10C","n":"KAMATAM MOHAN REDDY 2023-ECE","r":"9923005054","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-D46094","n":"PONAKA HEMANTH KRISHNA REDDY 2023-ECE","r":"9923005119","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-907C83","n":"GLADWYN JEFFIN C 2025-ECE","r":"9925005050","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-3CD574","n":"TAVVA SANJAY REDDY 2025-CSE","r":"99250040788","d":"CSE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-5BAFD5","n":"GANESH VENKATESH M 2025-ECE","r":"9925005048","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-23CF8D","n":"ALAVALAPATI HIMA PUJA 2025-CSE","r":"99250040032","d":"AI/ML","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-E2F4F0","n":"TANGUTURI MAHENDRA REDDY","r":"99250040785","d":"CSE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-F6BDE1","n":"SIDDAVATAM NAGA RANA PRATHAP REDDY","r":"99250040720","d":"CSE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-782EE4","n":"KAMSALA LAKSHMIKALA 2024-ECE","r":"9924005274","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-FA1154","n":"CHRISY JOY JENISHA A 2024-ECE","r":"9924005193","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-445F83","n":"Sanjayram S 2023-IT","r":"9923008070","d":"IT","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-C7E7F2","n":"Mahatheir Mohamed Sabi S","r":"9923005319","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-E9F616","n":"SHEIK MOHAMMED F 2023-ECE","r":"9923005222","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-9DE10A","n":"ARUNKUMAR M 2023-ECE","r":"9923005188","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-2BECE2","n":"Asothairaman 2023-ECE","r":"9923005300","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-D57548","n":"THULASI RAM D P 2024-ECE","r":"9924005272","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-3505A6","n":"VARSHAH S B 2024-ECE","r":"9924005077","d":"ECE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-E5199E","n":"A.DEEPAK KUMARAN","r":"9525005301","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-25B801","n":"MARUTHUPANDI K 2024-ECE","r":"9924005306","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-53C7B2","n":"S.Neethivanan","r":"9924005323","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-54C616","n":"PATTAMUTHU S 2024-ECE","r":"9924005452","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-CB6683","n":"NANDHA KUMAR N 2024-ECE","r":"9924005114","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-6CB799","n":"SIVASAKTHI S 2024-ECE","r":"9924005211","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-63AC7C","n":"K.ROSHINI 2023-ECE","r":"9923005297","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-44B083","n":"SRIRAM KUMAR M 2025-ECE","r":"9925005161","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-C0B0CE","n":"Syed Masood N","r":"","d":"EEE","k":"Veerachamy CE","s":"2","y":"2"},{"c":"EUPH-26-0AF157","n":"SHREEDHARAN S M 2024-ECE","r":"9924005170","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-527914","n":"K. Mukesh","r":"","d":"EEE","k":"Veerachamy CE","s":"2","y":"2"},{"c":"EUPH-26-55AE0D","n":"HARSHINI R 2025-ECE","r":"9925005126","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-1135B1","n":"DHINNEMEEDI CHENNAPPAGARI BHANU CHANDRA 2024-ECE","r":"9924005236","d":"CSE","k":"KARE","s":"1","y":"3"},{"c":"EUPH-26-50FFC5","n":"YADLAPALLI CHARAN 2024-ECE","r":"9924005096","d":"CSE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-E55BE2","n":"BATTA SANTHOSH 2024-ECE","r":"9924005064","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-851BA3","n":"MADDINENI ABHILASH","r":"9924005095","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-12AFCF","n":"A SASIKARAN","r":"9925005006","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-CE5B70","n":"RAJA SRI M H","r":"9925005127","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-B3C5B4","n":"SIVA SANKARI S K","r":"9924005209","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-6640DB","n":"Rajaguruvel.P","r":"","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-7A2492","n":"NIRJARA DEVE K 2024-ECE","r":"9924005322","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-22A5CB","n":"ANISHA AFURSE K 2024-ECE","r":"9924005198","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-4B8017","n":"BHUNAESH J","r":"9924005223","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-3CFF8F","n":"RAGU BALAN A","r":"9924005137","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-598A0D","n":"KAVI PRIYA T 2024-ECE","r":"9924005084","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-0CB5AC","n":"DISHO MEGIL MATHEW S 2024-ECE","r":"9924005241","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-B3EF71","n":"MARIPANDI K","r":"9924005132","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-F84C3F","n":"ROSHINI R","r":"9924005166","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-DBB122","n":"PRASANNA R","r":"9924005136","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-D860AD","n":"PRASANNA","r":"9924005046","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-42EA6B","n":"KONDETI REDDI CHAKRADHAR","r":"9923005100","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-F2AC1E","n":"BHEEMA KRISHNAUJWAL 2023-ECE","r":"9923005149","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-FC3F07","n":"MARISELVAM G","r":"9924005309","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-6A45FD","n":"VENKATESH BABU K S PRABHAKAR 2024-ECE","r":"9924005362","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-2E3582","n":"YOGESWARAPANDIAN T 2024-ECE","r":"9924005370","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-F235E9","n":"SUBHIN KUMAR S 2023-ECE","r":"9923005225","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-AE62E3","n":"Praveen Sundar. M 2023-ECE","r":"9923005298","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-D1D22A","n":"AATHIL AHAMED.S.A 2023-ECE","r":"9923005306","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-DF3E8D","n":"RITHESH RAM R","r":"9925005138","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-42504E","n":"BASKARAN N 2025-ECE","r":"9925005170","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-CBEF72","n":"ROHIT PANDIAN P 2024-ECE","r":"9924005152","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-3D1558","n":"DURGESH PANDI P 2024-ECE","r":"9924005049","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-BCDEA4","n":"ESAKKI PAVAN R 2024-ECE","r":"9924005053","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-CFD6BF","n":"GOKUL P","r":"9924005178","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-832520","n":"CHARANKUMAR REDDY","r":"9925005105","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-84B495","n":"NAREPPAGARI SHRAVAN KRISHNA 2025-ECE","r":"9925005102","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-1B1D09","n":"HARI KRISHNAN M 2025-ECE","r":"9925005061","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-0208A1","n":"SARATH CHANDRA BOSE S 2023-ECE","r":"9923005288","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-24BBD9","n":"G KARNIKA SHREE 2025-ECE","r":"9925005195","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-F6F4B3","n":"Stefin R","r":"","d":"Engg & Tech","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-AAD1D0","n":"Aathisivan C","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-8585D0","n":"SUBASH S R","r":"","d":"VLSI","k":"Velammal CET","s":"1","y":"2"},{"c":"EUPH-26-3B1DA9","n":"Sachin T","r":"","d":"VLSI","k":"Velammal CET","s":"1","y":"2"},{"c":"EUPH-26-79BC27","n":"Muthuramalingam S","r":"","d":"VLSI","k":"Velammal CET","s":"1","y":"2"},{"c":"EUPH-26-528549","n":"Swarna Lakshmi","r":"","d":"ECE","k":"Velammal EC","s":"1","y":"3"},{"c":"EUPH-26-7D6EE9","n":"S.Sweety Joy","r":"","d":"ECE","k":"Velammal CET","s":"1","y":"3"},{"c":"EUPH-26-B28971","n":"GOKUL.T","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-DB4DC7","n":"Abisri","r":"","d":"CSE","k":"Velammal CET","s":"1","y":"2"},{"c":"EUPH-26-A2DFA5","n":"Aravinthan k","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-BC78D1","n":"Dharshandharshu0710","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"2"},{"c":"EUPH-26-19EBB6","n":"KARA SURENDRANATH REDDY 2025-CSE","r":"99250040040","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-31B318","n":"ADHITHYAN S","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-3BC2C7","n":"Harikarasudhan","r":"","d":"VLSI","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-B70F20","n":"Abinikitha A","r":"","d":"ECE","k":"M. Kumarasamy CE","s":"1","y":"3"},{"c":"EUPH-26-6C1F73","n":"KANTA CHENNAKESHAVULU","r":"99240041225","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-E864B5","n":"KAVIYA R","r":"9924005469","d":"ECE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-17882A","n":"BOJJAPPA GARI THANUSH 2025-CSE","r":"99250040097","d":"CSE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-F2EC13","n":"SRIMATHI M","r":"SRIMATHIM777","d":"ECE","k":"KARE","s":"1","y":"2"},{"c":"EUPH-26-3836BE","n":"SRI GAYATRI G 2025-ECE","r":"9925005162","d":"ECE","k":"KARE","s":"2","y":"2"},{"c":"EUPH-26-2B0FF3","n":"MUNAGA VENKATA GOPI CHANDU 2024-CSE","r":"99240040403","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-B41A47","n":"CHILEKAM PALLI RAMA KANTH REDDY","r":"9924005229","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-2B3444","n":"CHINNAPPAGARI NITHIN KUMAR","r":"9924005393","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-19E625","n":"THATIGOLLA JIGNESH 2024-ECE","r":"9924005039","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-312CF4","n":"DASARI RAVI KISHOR","r":"9924005037","d":"CSE","k":"KARE","s":"2","y":"3"},{"c":"EUPH-26-7C2B81","n":"DUGGEMPUDI SRINIVASA REDDY 2023-ECE","r":"9923005077","d":"ECE","k":"KARE","s":"1","y":"4"},{"c":"EUPH-26-C82FAC","n":"Siva Sai chandan Tirumalsetty","r":"","d":"ECE","k":"KARE","s":"2","y":"4"},{"c":"EUPH-26-4CE79A","n":"Helen Pavithra","r":"","d":"ECE","k":"KARE","s":"1","y":"1"}];
+const BY_CODE={}; PEOPLE.forEach(p=>BY_CODE[p.c]=p);
+const id=n=>"n"+String(n).padStart(2,"0");
+const $=s=>document.getElementById(s);
+const LS="esimathon-draw";
+let claims={}, db=null, canAdmin=true, pending=null, team=[];
+
+function loadLocal(){try{claims=JSON.parse(localStorage.getItem(LS)||"{}")||{}}catch(e){claims={}}}
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(claims))}catch(e){}}
+function assigned(){const m={}; Object.values(claims).forEach(c=>(c.members||[]).forEach(code=>m[code]=c)); return m}
+function toast(t){const e=$("toast"); e.textContent=t; e.classList.add("on"); clearTimeout(toast.h); toast.h=setTimeout(()=>e.classList.remove("on"),2600)}
+function maxSize(){return +$("max").value}
+
+function renderSearch(){
+  const q=$("q").value.trim().toLowerCase(), box=$("results"); box.textContent="";
+  if(q.length<2){box.classList.remove("on");return}
+  const slot=$("slot").value, as=assigned();
+  const hits=PEOPLE.filter(p=>(!slot||p.s===slot)&&(p.n.toLowerCase().includes(q)||p.r.includes(q)||p.c.toLowerCase().includes(q))).slice(0,10);
+  if(!hits.length){const d=document.createElement("div"); d.className="res"; d.textContent="No participant matches that."; box.append(d)}
+  hits.forEach(p=>{
+    const b=document.createElement("button"); b.className="res"; b.type="button";
+    const l=document.createElement("span"); l.textContent=p.n;
+    const r=document.createElement("span"); r.className="meta";
+    const inTeam=as[p.c], inDraft=team.includes(p.c);
+    r.textContent= inTeam ? "Already in "+inTeam.name : inDraft ? "Added" : [p.r||p.c,p.d,p.k,"Slot "+p.s].filter(Boolean).join(" · ");
+    if(inTeam||inDraft) b.disabled=true;
+    b.onclick=()=>addMember(p.c);
+    b.append(l,r); box.append(b);
+  });
+  box.classList.add("on");
+}
+function addMember(code){
+  if(team.length>=maxSize()){toast("A team can have at most "+maxSize()+" members.");return}
+  team.push(code); $("q").value=""; $("results").classList.remove("on"); renderTeam(); $("q").focus();
+}
+function renderTeam(){
+  const c=$("chips"); c.textContent="";
+  if(!team.length){const s=document.createElement("span"); s.className="hint"; s.textContent="No members added yet. Search above and tap a name."; c.append(s)}
+  team.forEach(code=>{
+    const p=BY_CODE[code]; const d=document.createElement("span"); d.className="chip";
+    const t=document.createElement("span"); t.textContent=p.n+" "; const sm=document.createElement("small"); sm.textContent=p.r||p.c; t.append(sm);
+    const x=document.createElement("button"); x.type="button"; x.textContent="×"; x.setAttribute("aria-label","Remove "+p.n);
+    x.onclick=()=>{team=team.filter(k=>k!==code); renderTeam()};
+    d.append(t,x); c.append(d);
+  });
+  $("sizeHint").textContent=team.length+" of "+maxSize()+" added";
+  const ready=team.length>0;
+  $("grid").classList.toggle("locked",!ready);
+  $("pickHint").textContent= ready ? "Tap any number to reveal your team name." : "Add at least one member first.";
+}
+function render(){
+  const grid=$("grid"); grid.textContent=""; let avail=0;
+  NAMES.forEach((_,i)=>{const n=i+1; if(claims[id(n)]) return; avail++;
+    const b=document.createElement("button"); b.className="card"; b.dataset.n=n; b.textContent=n; b.setAttribute("aria-label","Pick number "+n);
+    b.onclick=()=>openModal(n); grid.append(b)});
+  $("left").textContent=avail; $("noneLeft").hidden=avail!==0;
+  const as=assigned(); $("free").textContent=PEOPLE.length-Object.keys(as).length;
+  team=team.filter(c=>!as[c]);
+  const list=Object.values(claims).sort((a,b)=>(b.at||0)-(a.at||0)), box=$("teams"); box.textContent="";
+  list.forEach(c=>{
+    const d=document.createElement("div"); d.className="tm";
+    const a=document.createElement("span"); a.className="n"; a.textContent=c.n;
+    const m=document.createElement("div");
+    const nm=document.createElement("div"); nm.className="nm"; nm.textContent=c.name;
+    const mem=document.createElement("div"); mem.className="mem"; mem.textContent=(c.members||[]).map(k=>BY_CODE[k]?BY_CODE[k].n:k).join(", ");
+    m.append(nm,mem); d.append(a,m);
+    if(canAdmin){const r=document.createElement("button"); r.className="rel"; r.textContent="Release"; r.onclick=()=>release(c.n); d.append(r)}
+    box.append(d);
+  });
+  $("teamCount").textContent=list.length? list.length+" teams":"";
+  $("noneTeams").hidden=list.length>0;
+  $("reset").hidden=!(canAdmin&&list.length);
+  renderTeam();
+}
+function openModal(n){
+  if(!team.length){toast("Add your team members first."); $("q").focus(); return}
+  if(claims[id(n)]){toast("That number was just picked.");return}
+  pending=n; $("mNum").textContent=n;
+  $("mMembers").textContent=team.map(k=>BY_CODE[k].n).join(", ");
+  $("err").textContent=""; $("ov").classList.add("on"); setTimeout(()=>$("confirm").focus(),30);
+}
+function closeModal(){$("ov").classList.remove("on"); pending=null}
+async function claim(){
+  const n=pending; if(!n) return; const btn=$("confirm"); btn.disabled=true;
+  const as=assigned(), clash=team.find(k=>as[k]);
+  if(clash){$("err").textContent=BY_CODE[clash].n+" is already in "+as[clash].name+". Remove them first."; btn.disabled=false; return}
+  const rec={n,name:NAMES[n-1],members:team.slice(),at:Date.now()};
+  try{
+    if(db){
+      const ref=db.doc("claims/"+id(n));
+      const lease=await ref.acquire({holder:"tab-"+Math.random().toString(36).slice(2),ttlMs:5000});
+      if(!lease.acquired){$("err").textContent="Another team is picking this number right now. Choose a different one."; return}
+      const snap=await ref.get();
+      if(snap.exists&&snap.data()&&snap.data().name){$("err").textContent="This number was just picked by another team."; return}
+      await ref.set(rec);
+    }
+    const card=document.querySelector('.card[data-n="'+n+'"]'); closeModal();
+    const done=()=>{claims[id(n)]=rec; team=[]; if(!db) saveLocal(); render(); showReveal(rec)};
+    if(card&&!matchMedia("(prefers-reduced-motion: reduce)").matches){card.classList.add("leaving"); setTimeout(done,420)} else done();
+  }catch(e){$("err").textContent= e&&e.code==="invalid_argument"?"You don't have permission to pick numbers here.":"Couldn't save. Check the connection and try again."}
+  finally{btn.disabled=false}
+}
+function showReveal(r){
+  $("rvT").textContent="Number "+r.n+" is";
+  const nm=$("rvName"); nm.textContent=r.name; nm.style.animation="none"; void nm.offsetWidth; nm.style.animation="";
+  $("rvBy").textContent=r.members.map(k=>BY_CODE[k]?BY_CODE[k].n:k).join(", ");
+  $("rv").classList.add("on"); setTimeout(()=>$("rvOk").focus(),30);
+}
+async function release(n){
+  const c=claims[id(n)]; if(!c||!confirm("Release number "+n+" ("+c.name+")? Its members will be free to join another team.")) return;
+  try{ if(db) await db.doc("claims/"+id(n)).delete(); delete claims[id(n)]; if(!db) saveLocal(); render(); toast("Number "+n+" is available again.")}
+  catch(e){toast("Couldn't release. Try again.")}
+}
+async function resetAll(){
+  if(!confirm("Release every team and number? This can't be undone.")) return;
+  try{ if(db){for(const k of Object.keys(claims)) await db.doc("claims/"+k).delete()} claims={}; if(!db) saveLocal(); render(); toast("Everything is reset.")}
+  catch(e){toast("Couldn't reset everything. Try again.")}
+}
+function buildCSV(){
+  const esc=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const rows=[["Number","Team Name","Member","Register Number","Pass Code","Department","College","Slot","Year"]];
+  Object.values(claims).sort((a,b)=>a.n-b.n).forEach(c=>(c.members||[]).forEach(k=>{const p=BY_CODE[k]||{c:k};rows.push([c.n,c.name,p.n,p.r,p.c,p.d,p.k,p.s,p.y])}));
+  const as=assigned(); PEOPLE.filter(p=>!as[p.c]).forEach(p=>rows.push(["","Not in a team",p.n,p.r,p.c,p.d,p.k,p.s,p.y]));
+  return rows.map(r=>r.map(esc).join(",")).join("\r\n");
+}
+async function downloadCSV(){
+  const data="\ufeff"+buildCSV(), filename="eSIM-A-THON_teams.csv";
+  try{const dl=window.claude&&window.claude.use?await claude.use("downloads"):null;
+    if(dl){await dl.save({filename,data});return}}catch(e){if(e&&e.code==="declined")return; toast("Couldn't save the file."); return}
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type:"text/csv"})); a.download=filename; a.click();
+}
+
+$("q").addEventListener("input",renderSearch);
+$("q").addEventListener("focus",renderSearch);
+$("slot").onchange=renderSearch;
+$("max").onchange=()=>{if(team.length>maxSize()) team=team.slice(0,maxSize()); renderTeam()};
+document.addEventListener("click",e=>{if(!e.target.closest(".search")) $("results").classList.remove("on")});
+$("cancel").onclick=closeModal; $("confirm").onclick=claim;
+$("rvOk").onclick=()=>{$("rv").classList.remove("on"); $("q").focus()};
+$("ov").addEventListener("click",e=>{if(e.target.id==="ov")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();$("rv").classList.remove("on");$("results").classList.remove("on")}});
+$("reset").onclick=resetAll; $("csv").onclick=downloadCSV;
+
+loadLocal(); render(); $("mode").textContent="Saved on this device.";
+(async()=>{
+  if(!window.claude||!window.claude.use) return;
+  try{
+    const [d,u]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(u){try{canAdmin=!!(await u.canEdit())}catch(e){canAdmin=false}}
+    if(!d){render();return}
+    db=d; claims={}; render(); $("mode").textContent="Live: picks sync instantly on every screen that has this page open.";
+    db.collection("claims").onSnapshot(s=>{const nx={}; s.docs.forEach(doc=>{const v=doc.data(); if(v&&v.name) nx[doc.id]=v}); claims=nx; render()},
+      ()=>{$("mode").textContent="Live sync paused. Reload the page to reconnect."});
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
